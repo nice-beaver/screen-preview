@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Screen Preview</title>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            text-align: left;
+            color: #222;
+            background-color: #fff;
+            cursor: pointer;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    let count = {
+        ctrl: 0,
+        alt:  0,
+        deg:  1
+    };
+
+    document.addEventListener('click', event => {
+        let color = [0, 0, 0];
+
+        if (event.ctrlKey) {
+            count.alt = 0;
+
+            color[Math.floor(count.ctrl)] = 255;
+
+            if (event.altKey && count.ctrl % 1 === 0.5) {
+                let next = Math.ceil(count.ctrl);
+                if (next > 2) next = 0;
+
+                color[next] = 255;
+            }
+
+            count.ctrl+= event.altKey ? 0.5 : 1;
+            if (count.ctrl > 2.5) count.ctrl = 0;
+        } else if (event.altKey) {
+            count.ctrl = 0;
+
+            color = color.map(() => 255 / 6 * count.alt);
+
+            count.alt++;
+            if (count.alt > 6) count.alt = 0;
+        } else {
+            Object.assign(count, { ctrl: 0, alt: 0 });
+
+            color = color.map(() => Math.round(Math.random() * 255));
+        }
+
+        document.body.style.background = `rgb(${color.join(',')})`;
+    });
+
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault();
+
+        let angle = 90;
+
+        if (event.altKey || event.ctrlKey) {
+            count.deg++;
+            if (count.deg > 3) count.deg = 0;
+
+            angle*= count.deg;
+        }
+
+        document.body.style.background = `linear-gradient(${angle}deg, rgb(0, 0, 0) 0%, rgb(255, 255, 255) 100%)`;
+    });
+</script>
+
+</body>
+</html>
